@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sum-two-numbers",
+    "title": "Sum Two Numbers",
+    "description": "Write a function `sum(a, b)` that returns the sum of two numbers.",
+    "starterCode": "def sum(a, b):\n    # Your code here\n    pass",
+    "testCases": [
+      {
+        "input": "sum(1, 2)",
+        "expected": "3"
+      },
+      {
+        "input": "sum(-1, 5)",
+        "expected": "4"
+      },
+      {
+        "input": "sum(0, 0)",
+        "expected": "0"
+      }
+    ]
+  },
+  {
+    "id": "hello-name",
+    "title": "Hello Name",
+    "description": "Write a function `greet(name)` that returns 'Hello {name}'",
+    "starterCode": "def greet(name):\n    pass",
+    "testCases": [
+      {
+        "input": "greet('Alice')",
+        "expected": "'Hello Alice'"
+      },
+      {
+        "input": "greet('Bob')",
+        "expected": "'Hello Bob'"
+      }
+    ]
+  }
+]
