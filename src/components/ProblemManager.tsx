@@ -36,10 +36,22 @@ export const ProblemManager: React.FC = () => {
 
     const handleExport = () => {
         if (!problem) return;
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(problem, null, 2));
+        // Generate dynamic filename from title
+        const filename = problem.title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '') || `problem-${problem.id}`;
+
+        // Create a copy of the problem with the updated ID to match the filename
+        const problemToExport = {
+            ...problem,
+            id: filename
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(problemToExport, null, 2));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `problem-${problem.id}.json`);
+        downloadAnchorNode.setAttribute("download", `${filename}.json`);
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
