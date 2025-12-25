@@ -100,12 +100,12 @@ def run_tests_internal():
             actual_val = eval(test['input'])
             expected_val = eval(test['expected'])
             
-            passed = str(actual_val) == str(expected_val)
+            passed = actual_val == expected_val
             results.append({
                 "passed": passed,
                 "input": test['input'],
-                "actual": str(actual_val),
-                "expected": str(expected_val)
+                "actual": repr(actual_val),
+                "expected": repr(expected_val)
             })
         except Exception as e:
             results.append({
