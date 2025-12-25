@@ -5,10 +5,10 @@ import React, { useState, useEffect } from "react";
 import { ProblemSolver } from "./ProblemSolver";
 import { Problem } from "@/types/problem";
 import defaultProblems from "@/data/problems.json";
-import { Download, Upload, Save, RefreshCw } from "lucide-react";
+import { Download, Upload, RefreshCw } from "lucide-react";
 
 export const ProblemManager: React.FC = () => {
-    const [problem, setProblem] = useState<Problem | null>(null);
+    const [problem, setProblem] = useState<Problem>(defaultProblems[0]);
     const [isLoaded, setIsLoaded] = useState(false);
 
     // Load from LocalStorage on mount
@@ -16,15 +16,18 @@ export const ProblemManager: React.FC = () => {
         const saved = localStorage.getItem("current-problem");
         if (saved) {
             try {
-                setProblem(JSON.parse(saved));
+                const parsed = JSON.parse(saved);
+                setTimeout(() => {
+                    setProblem(parsed);
+                }, 0);
             } catch (e) {
                 console.error("Failed to parse saved problem", e);
-                setProblem(defaultProblems[0]);
+                // Already at default, no need to set
             }
-        } else {
-            setProblem(defaultProblems[0]);
         }
-        setIsLoaded(true);
+        setTimeout(() => {
+            setIsLoaded(true);
+        }, 0);
     }, []);
 
     // Save to LocalStorage whenever problem changes
@@ -71,20 +74,33 @@ export const ProblemManager: React.FC = () => {
                     } else {
                         alert("Invalid problem JSON format");
                     }
-                } catch (error) {
+                } catch {
                     alert("Error parsing JSON file");
                 }
             };
         }
     };
 
-    const handleReset = () => {
-        if (confirm("Are you sure you want to reset to the default problem? All changes will be lost.")) {
+    const [resetSolutionTrigger, setResetSolutionTrigger] = useState(0);
+
+    const handleFactoryReset = () => {
+        if (confirm("Factory Reset: Are you sure you want to reset EVERYTHING to default? This includes problem description and tests.")) {
+            // Clear the solution cache for the default problem so it reloads fresh
+            const defaultProblemId = defaultProblems[0].id;
+            localStorage.removeItem(`solution-${defaultProblemId}`);
+
             setProblem(defaultProblems[0]);
         }
     }
 
-    if (!problem) return <div className="p-8 text-center">Loading...</div>;
+    const handleResetSolution = () => {
+        if (confirm("Are you sure you want to reset your solution code? Changes to problem description will be kept.")) {
+            // Increment trigger to notify child component
+            setResetSolutionTrigger(prev => prev + 1);
+        }
+    }
+
+
 
     return (
         <div className="space-y-6">
@@ -103,17 +119,20 @@ export const ProblemManager: React.FC = () => {
                 </button>
 
                 <button
-                    onClick={handleReset}
+                    onClick={handleResetSolution}
                     className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-sm font-semibold transition-colors"
-                    title="Reset to Default"
+                    title="Reset your solution code to starter code"
                 >
-                    <RefreshCw size={16} /> Reset
+                    <RefreshCw size={16} /> Reset Solution
                 </button>
             </div>
 
             <ProblemSolver
+                key={problem.id}
                 problem={problem}
                 onUpdate={(updates) => setProblem({ ...problem, ...updates })}
+                onFactoryReset={handleFactoryReset}
+                resetSolutionTrigger={resetSolutionTrigger}
             />
         </div>
     );

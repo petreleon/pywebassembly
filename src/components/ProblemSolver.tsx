@@ -1,15 +1,16 @@
-// src/components/ProblemSolver.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { CodeEditor } from "./CodeEditor";
 import { usePython } from "@/lib/usePython";
-import { Play, CheckCircle, XCircle, Lock, Unlock, Edit2, Check, Plus, Trash2 } from "lucide-react";
+import { Play, CheckCircle, XCircle, Edit2, Check, Plus, Trash2, RotateCcw } from "lucide-react";
 import { Problem, TestCase } from "@/types/problem";
 
 interface ProblemSolverProps {
     problem: Problem;
     onUpdate: (updates: Partial<Problem>) => void;
+    onFactoryReset: () => void;
+    resetSolutionTrigger: number;
 }
 
 interface TestResult {
@@ -20,48 +21,56 @@ interface TestResult {
     error?: string;
 }
 
-export const ProblemSolver: React.FC<ProblemSolverProps> = ({ problem, onUpdate }) => {
+export const ProblemSolver: React.FC<ProblemSolverProps> = ({ problem, onUpdate, onFactoryReset, resetSolutionTrigger }) => {
     const [code, setCode] = useState(problem.starterCode);
     const [isProblemEditMode, setIsProblemEditMode] = useState(false);
 
     const { runPython, output, isRunning } = usePython();
-    const [results, setResults] = useState<TestResult[] | null>(null);
 
-    // Sync internal code state when switching problems, but NOT when editing starter code
-    // We want to preserve user's solution unless they explicitly reset.
+    // Listen for parent reset solution trigger
     useEffect(() => {
-        // Only reset code if we loaded a completely different problem ID
-        // or if we just finished editing the starter code and want to re-apply it?
-        // Actually, usually changing starter code shouldn't wipe user's current work unless they want to.
-        // But for simplicity, let's keep the `code` separate.
-    }, [problem.id]);
-
-    // Initialize code on first load
-    useEffect(() => {
-        if (problem.starterCode && !code) {
-            setCode(problem.starterCode);
+        if (resetSolutionTrigger > 0) {
+            setTimeout(() => {
+                setCode(problem.starterCode);
+            }, 0);
+            localStorage.setItem(`solution-${problem.id}`, problem.starterCode);
         }
-    }, []);
+    }, [resetSolutionTrigger, problem.starterCode, problem.id]);
 
-
-    // Parse output to find test results
+    // Load solution from local storage on mount
     useEffect(() => {
-        if (!isRunning && output.length > 0) {
-            const lastLine = output[output.length - 1];
-            try {
-                const parsedResults = JSON.parse(lastLine);
-                if (Array.isArray(parsedResults)) {
-                    setResults(parsedResults);
-                }
-            } catch (e) {
-                // console.log("Output is not JSON results:", lastLine);
+        const savedKey = `solution-${problem.id}`;
+        const savedSolution = localStorage.getItem(savedKey);
+        if (savedSolution !== null) {
+            setTimeout(() => {
+                setCode(savedSolution);
+            }, 0);
+        }
+    }, [problem.id]); // Empty dependency array as we rely on parent 'key' to remount on problem change
+
+    // Save solution to local storage whenever code changes
+    useEffect(() => {
+        if (!isProblemEditMode) {
+            localStorage.setItem(`solution-${problem.id}`, code);
+        }
+    }, [code, problem.id, isProblemEditMode]);
+
+    // Derived state for results
+    const results = useMemo(() => {
+        if (isRunning || output.length === 0) return null;
+        const lastLine = output[output.length - 1];
+        try {
+            const parsedResults = JSON.parse(lastLine);
+            if (Array.isArray(parsedResults)) {
+                return parsedResults as TestResult[];
             }
+        } catch {
+            // Ignore non-JSON output
         }
+        return null;
     }, [isRunning, output]);
 
     const handleRun = () => {
-        setResults(null);
-
         // When running, we always run the CURRENT EDITOR CONTENT if we are in solution mode.
         // If in Edit Mode, we probably shouldn't run, or we should run the starter code?
         // Let's assume run matches what's visible.
@@ -158,19 +167,31 @@ run_tests_internal()
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
-                        <button
-                            onClick={() => {
-                                // If we are about to exit edit mode, allow reset
-                                if (isProblemEditMode) {
-                                    // Reset code to the (potentially updated) starter code
-                                    setCode(problem.starterCode);
-                                }
-                                setIsProblemEditMode(!isProblemEditMode);
-                            }}
-                            className={`flex items-center gap-2 px-3 py-1 rounded text-sm ${isProblemEditMode ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-600'}`}
-                        >
-                            {isProblemEditMode ? <><Check size={14} /> Done Editing</> : <><Edit2 size={14} /> Edit Problem</>}
-                        </button>
+                        <div className="flex gap-2">
+                            {isProblemEditMode && (
+                                <button
+                                    onClick={onFactoryReset}
+                                    className="flex items-center gap-2 px-3 py-1 rounded text-sm bg-red-700 hover:bg-red-600 transition-colors"
+                                    title="Reset everything (tests, description) to default"
+                                >
+                                    <RotateCcw size={14} /> Factory Reset
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => {
+                                    // If we are about to exit edit mode, allow reset
+                                    if (isProblemEditMode) {
+                                        // Reset code to the (potentially updated) starter code
+                                        setCode(problem.starterCode);
+                                    }
+                                    setIsProblemEditMode(!isProblemEditMode);
+                                }}
+                                className={`flex items-center gap-2 px-3 py-1 rounded text-sm ${isProblemEditMode ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-600'}`}
+                            >
+                                {isProblemEditMode ? <><Check size={14} /> Done Editing</> : <><Edit2 size={14} /> Edit Problem</>}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -190,7 +211,6 @@ run_tests_internal()
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[600px]">
-                {/* Editor Column */}
                 {/* Editor Column */}
                 <div className={`relative flex flex-col transition-all`}>
                     {isProblemEditMode && (
