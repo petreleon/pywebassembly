@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync-examples": "node scripts/sync-examples.js"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

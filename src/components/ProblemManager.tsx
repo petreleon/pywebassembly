@@ -3,54 +3,99 @@
 
 import React, { useState, useEffect } from "react";
 import { ProblemSolver } from "./ProblemSolver";
-import { Problem } from "@/types/problem";
-import defaultProblems from "@/data/problems.json";
-import { Download, Upload, RefreshCw } from "lucide-react";
+import { Problem, ProblemCategory } from "@/types/problem";
+import defaultProblemsData from "@/data/problems.json";
+import { Download, Upload, RefreshCw, ChevronRight, ChevronDown } from "lucide-react";
+
+const categories = defaultProblemsData as unknown as ProblemCategory[];
 
 export const ProblemManager: React.FC = () => {
-    const [problem, setProblem] = useState<Problem>(defaultProblems[0]);
-    const [isLoaded, setIsLoaded] = useState(false);
+    // Flatten all problems for easier search/lookup if needed, 
+    // but we will primarily work with strict category selection.
 
-    // Load from LocalStorage on mount
+    const [selectedCategoryName, setSelectedCategoryName] = useState<string>(categories[0]?.name || "");
+    const [problem, setProblem] = useState<Problem | null>(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [resetSolutionTrigger, setResetSolutionTrigger] = useState(0);
+
+    // Initialize logic
     useEffect(() => {
-        const saved = localStorage.getItem("current-problem");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                setTimeout(() => {
-                    setProblem(parsed);
-                }, 0);
-            } catch (e) {
-                console.error("Failed to parse saved problem", e);
-                // Already at default, no need to set
+        // Try to load last used problem ID
+        const savedId = localStorage.getItem("current-problem-id");
+        let initialProblem: Problem | undefined;
+
+        if (savedId) {
+            // Find in categories
+            for (const cat of categories) {
+                const found = cat.problems.find(p => p.id === savedId);
+                if (found) {
+                    initialProblem = found;
+                    setSelectedCategoryName(cat.name);
+                    break;
+                }
             }
         }
-        setTimeout(() => {
-            setIsLoaded(true);
-        }, 0);
+
+        // Fallback to first problem of first category
+        if (!initialProblem && categories.length > 0 && categories[0].problems.length > 0) {
+            initialProblem = categories[0].problems[0];
+            setSelectedCategoryName(categories[0].name);
+        }
+
+        if (initialProblem) {
+            // Load saved state for this specific problem if exists, otherwise use default
+            const savedState = localStorage.getItem(`problem-state-${initialProblem.id}`);
+            if (savedState) {
+                try {
+                    setProblem(JSON.parse(savedState));
+                } catch (e) {
+                    setProblem(initialProblem);
+                }
+            } else {
+                setProblem(initialProblem);
+            }
+        }
+
+        setIsLoaded(true);
     }, []);
 
-    // Save to LocalStorage whenever problem changes
+    // Save current problem state
     useEffect(() => {
         if (problem && isLoaded) {
-            localStorage.setItem("current-problem", JSON.stringify(problem));
+            localStorage.setItem(`problem-state-${problem.id}`, JSON.stringify(problem));
+            localStorage.setItem("current-problem-id", problem.id);
         }
     }, [problem, isLoaded]);
 
+    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const catName = e.target.value;
+        setSelectedCategoryName(catName);
+        const cat = categories.find(c => c.name === catName);
+        if (cat && cat.problems.length > 0) {
+            setProblem(cat.problems[0]);
+        }
+    };
+
+    const handleProblemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const probId = e.target.value;
+        const cat = categories.find(c => c.name === selectedCategoryName);
+        const prob = cat?.problems.find(p => p.id === probId);
+        if (prob) {
+            setProblem(prob);
+        }
+    };
+
+    const currentCategory = categories.find(c => c.name === selectedCategoryName);
+
+
     const handleExport = () => {
         if (!problem) return;
-        // Generate dynamic filename from title
         const filename = problem.title
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)/g, '') || `problem-${problem.id}`;
 
-        // Create a copy of the problem with the updated ID to match the filename
-        const problemToExport = {
-            ...problem,
-            id: filename
-        };
-
+        const problemToExport = { ...problem, id: filename };
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(problemToExport, null, 2));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
@@ -68,9 +113,9 @@ export const ProblemManager: React.FC = () => {
                 try {
                     const result = e.target?.result as string;
                     const importedProblem = JSON.parse(result) as Problem;
-                    // Basic validation could go here
                     if (importedProblem.title && importedProblem.testCases) {
                         setProblem(importedProblem);
+                        // We might not set category/id in storage effectively for imported ones unless we match them to existing IDs
                     } else {
                         alert("Invalid problem JSON format");
                     }
@@ -81,54 +126,91 @@ export const ProblemManager: React.FC = () => {
         }
     };
 
-    const [resetSolutionTrigger, setResetSolutionTrigger] = useState(0);
-
     const handleFactoryReset = () => {
-        if (confirm("Factory Reset: Are you sure you want to reset EVERYTHING to default? This includes problem description and tests.")) {
-            // Clear the solution cache for the default problem so it reloads fresh
-            const defaultProblemId = defaultProblems[0].id;
-            localStorage.removeItem(`solution-${defaultProblemId}`);
+        if (!problem) return;
+        if (confirm("Factory Reset: Are you sure you want to reset EVERYTHING to default?")) {
+            // Find original default
+            let original: Problem | undefined;
+            for (const cat of categories) {
+                const found = cat.problems.find(p => p.id === problem.id);
+                if (found) {
+                    original = found;
+                    break;
+                }
+            }
 
-            setProblem(defaultProblems[0]);
+            if (original) {
+                localStorage.removeItem(`solution-${problem.id}`);
+                setProblem(original);
+            }
         }
     }
 
     const handleResetSolution = () => {
-        if (confirm("Are you sure you want to reset your solution code? Changes to problem description will be kept.")) {
-            // Increment trigger to notify child component
+        if (confirm("Are you sure you want to reset your solution code?")) {
             setResetSolutionTrigger(prev => prev + 1);
         }
     }
 
-
+    if (!isLoaded || !problem) return <div className="p-4 text-center text-gray-400">Loading problems...</div>;
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-wrap gap-4 items-center justify-end bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-                <label className="flex items-center gap-2 cursor-pointer bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-semibold transition-colors">
-                    <Upload size={16} />
-                    Import JSON
-                    <input type="file" accept=".json" onChange={handleImport} className="hidden" />
-                </label>
+            {/* Top Bar: Selection & Controls */}
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-gray-900/50 p-4 rounded-lg border border-gray-800">
 
-                <button
-                    onClick={handleExport}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded text-sm font-semibold transition-colors"
-                >
-                    <Download size={16} /> Export JSON
-                </button>
+                {/* Problem Selection */}
+                <div className="flex flex-wrap gap-2 items-center w-full md:w-auto">
+                    <select
+                        value={selectedCategoryName}
+                        onChange={handleCategoryChange}
+                        className="bg-gray-800 border border-gray-700 text-gray-200 text-sm rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        {categories.map(cat => (
+                            <option key={cat.name} value={cat.name}>{cat.name}</option>
+                        ))}
+                    </select>
 
-                <button
-                    onClick={handleResetSolution}
-                    className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-sm font-semibold transition-colors"
-                    title="Reset your solution code to starter code"
-                >
-                    <RefreshCw size={16} /> Reset Solution
-                </button>
+                    <ChevronRight size={16} className="text-gray-500 hidden md:block" />
+
+                    <select
+                        value={problem.id}
+                        onChange={handleProblemChange}
+                        className="bg-gray-800 border border-gray-700 text-gray-200 text-sm rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 flex-grow md:flex-grow-0 md:min-w-[200px]"
+                    >
+                        {currentCategory?.problems.map(p => (
+                            <option key={p.id} value={p.id}>{p.title}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-wrap gap-2 items-center justify-end">
+                    <label className="flex items-center gap-2 cursor-pointer bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1.5 rounded text-sm font-medium transition-colors border border-blue-500/30">
+                        <Upload size={14} />
+                        Import
+                        <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+                    </label>
+
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-3 py-1.5 rounded text-sm font-medium transition-colors border border-emerald-500/30"
+                    >
+                        <Download size={14} /> Export
+                    </button>
+
+                    <button
+                        onClick={handleResetSolution}
+                        className="flex items-center gap-2 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 px-3 py-1.5 rounded text-sm font-medium transition-colors border border-gray-600/50"
+                        title="Reset your solution code to starter code"
+                    >
+                        <RefreshCw size={14} /> Reset
+                    </button>
+                </div>
             </div>
 
             <ProblemSolver
-                key={problem.id}
+                key={problem.id} // Re-mount when problem changes to reset internal state if strictly needed, or let component handle updates
                 problem={problem}
                 onUpdate={(updates) => setProblem({ ...problem, ...updates })}
                 onFactoryReset={handleFactoryReset}

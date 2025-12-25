@@ -10,3 +10,8 @@ export interface Problem {
     starterCode: string;
     testCases: TestCase[];
 }
+
+export interface ProblemCategory {
+    name: string;
+    problems: Problem[];
+}

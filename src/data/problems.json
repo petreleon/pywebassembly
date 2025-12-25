@@ -1,37 +1,382 @@
 [
   {
-    "id": "sum-two-numbers",
-    "title": "Sum Two Numbers",
-    "description": "Write a function `sum(a, b)` that returns the sum of two numbers.",
-    "starterCode": "def sum(a, b):\n    # Your code here\n    pass",
-    "testCases": [
+    "name": "01_exercitii_elementare",
+    "problems": [
       {
-        "input": "sum(1, 2)",
-        "expected": "3"
+        "id": "anul-bisect",
+        "title": "Anul Bisect (Leap Year)",
+        "description": "Determina daca un an este bisect.\nReguli:\n- Divizibil cu 4? DA.\n- DAR daca e divizibil cu 100? NU (decat daca e divizibil si cu 400).\nExemplu: 2000 e bisect, 1900 nu e bisect, 2024 e bisect.",
+        "starterCode": "def este_bisect(an):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "este_bisect(2000)",
+            "expected": "true"
+          },
+          {
+            "input": "este_bisect(1900)",
+            "expected": "false"
+          },
+          {
+            "input": "este_bisect(2024)",
+            "expected": "true"
+          },
+          {
+            "input": "este_bisect(2100)",
+            "expected": "false"
+          },
+          {
+            "input": "este_bisect(2400)",
+            "expected": "true"
+          },
+          {
+            "input": "este_bisect(2023)",
+            "expected": "false"
+          },
+          {
+            "input": "este_bisect(2020)",
+            "expected": "true"
+          }
+        ]
       },
       {
-        "input": "sum(-1, 5)",
-        "expected": "4"
+        "id": "calificative-scolare",
+        "title": "Calificative Scolare",
+        "description": "Se da o nota `punctaj` (0-100).\n- `punctaj >= 90`: \"Foarte Bine\"\n- `punctaj intre 70 si 89`: \"Bine\"\n- `punctaj intre 50 si 69`: \"Suficient\"\n- `punctaj < 50`: \"Insuficient\"",
+        "starterCode": "def calificativ(punctaj):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "calificativ(95)",
+            "expected": "\"Foarte Bine\""
+          },
+          {
+            "input": "calificativ(80)",
+            "expected": "\"Bine\""
+          },
+          {
+            "input": "calificativ(60)",
+            "expected": "\"Suficient\""
+          },
+          {
+            "input": "calificativ(40)",
+            "expected": "\"Insuficient\""
+          },
+          {
+            "input": "calificativ(90)",
+            "expected": "\"Foarte Bine\""
+          },
+          {
+            "input": "calificativ(89)",
+            "expected": "\"Bine\""
+          },
+          {
+            "input": "calificativ(70)",
+            "expected": "\"Bine\""
+          },
+          {
+            "input": "calificativ(69)",
+            "expected": "\"Suficient\""
+          },
+          {
+            "input": "calificativ(50)",
+            "expected": "\"Suficient\""
+          },
+          {
+            "input": "calificativ(49)",
+            "expected": "\"Insuficient\""
+          },
+          {
+            "input": "calificativ(0)",
+            "expected": "\"Insuficient\""
+          },
+          {
+            "input": "calificativ(100)",
+            "expected": "\"Foarte Bine\""
+          }
+        ]
       },
       {
-        "input": "sum(0, 0)",
-        "expected": "0"
-      }
-    ]
-  },
-  {
-    "id": "hello-name",
-    "title": "Hello Name",
-    "description": "Write a function `greet(name)` that returns 'Hello {name}'",
-    "starterCode": "def greet(name):\n    pass",
-    "testCases": [
-      {
-        "input": "greet('Alice')",
-        "expected": "'Hello Alice'"
+        "id": "cel-mai-mare-dintre-trei",
+        "title": "Cel mai mare dintre trei numere",
+        "description": "Se dau trei numere: a, b, c.\n- Gaseste si afiseaza maximul folosind doar if/elif/else.",
+        "starterCode": "def maxim_trei(a, b, c):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "maxim_trei(1, 2, 3)",
+            "expected": "3"
+          },
+          {
+            "input": "maxim_trei(10, 5, 8)",
+            "expected": "10"
+          },
+          {
+            "input": "maxim_trei(5, 5, 2)",
+            "expected": "5"
+          },
+          {
+            "input": "maxim_trei(-1, -5, -2)",
+            "expected": "-1"
+          },
+          {
+            "input": "maxim_trei(0, 0, 0)",
+            "expected": "0"
+          },
+          {
+            "input": "maxim_trei(10, 10, 5)",
+            "expected": "10"
+          }
+        ]
       },
       {
-        "input": "greet('Bob')",
-        "expected": "'Hello Bob'"
+        "id": "cine-este-mai-mare",
+        "title": "Cine este mai mare?",
+        "description": "Se dau doua numere, `a` si `b`.\n- Afiseaza valoarea cea mai mare dintre cele doua.\n- Daca sunt egale, afiseaza \"Numerele sunt egale\".",
+        "starterCode": "def mai_mare(a, b):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "mai_mare(10, 20)",
+            "expected": "20"
+          },
+          {
+            "input": "mai_mare(5, 1)",
+            "expected": "5"
+          },
+          {
+            "input": "mai_mare(7, 7)",
+            "expected": "\"Numerele sunt egale\""
+          },
+          {
+            "input": "mai_mare(-5, -10)",
+            "expected": "-5"
+          },
+          {
+            "input": "mai_mare(0, 5)",
+            "expected": "5"
+          },
+          {
+            "input": "mai_mare(1000, 1001)",
+            "expected": "1001"
+          }
+        ]
+      },
+      {
+        "id": "ecuatia-de-gradul-2",
+        "title": "Ecuatia de gradul 2",
+        "description": "Se dau a, b, c pentru ax^2 + bx + c = 0.\nCalculeaza delta = b^2 - 4ac.\n- delta > 0: \"Doua solutii reale\"\n- delta == 0: \"O solutie unica\"\n- delta < 0: \"Nicio solutie reala\"",
+        "starterCode": "def rezolva_ecuatie(a, b, c):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "rezolva_ecuatie(1, -3, 2)",
+            "expected": "\"Doua solutii reale\""
+          },
+          {
+            "input": "rezolva_ecuatie(1, 2, 1)",
+            "expected": "\"O solutie unica\""
+          },
+          {
+            "input": "rezolva_ecuatie(1, 1, 1)",
+            "expected": "\"Nicio solutie reala\""
+          },
+          {
+            "input": "rezolva_ecuatie(1.0, 4.0, 4.0)",
+            "expected": "\"O solutie unica\""
+          },
+          {
+            "input": "rezolva_ecuatie(1, -5, 6)",
+            "expected": "\"Doua solutii reale\""
+          },
+          {
+            "input": "rezolva_ecuatie(1, 2, 5)",
+            "expected": "\"Nicio solutie reala\""
+          }
+        ]
+      },
+      {
+        "id": "eligibil-angajare",
+        "title": "Esti eligibil pentru angajare?",
+        "description": "Trebuie `varsta` >= 18 SI `experienta` >= 3.\n- Daca ambele sunt adevarate: \"Angajat\".\n- Daca ai varsta, dar nu experienta: \"Necesita mai multa experienta\".\n- Daca nu ai varsta: \"Prea tanar\".",
+        "starterCode": "def angajare(varsta, experienta):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "angajare(20, 5)",
+            "expected": "\"Angajat\""
+          },
+          {
+            "input": "angajare(20, 1)",
+            "expected": "\"Necesita mai multa experienta\""
+          },
+          {
+            "input": "angajare(16, 5)",
+            "expected": "\"Prea tanar\""
+          },
+          {
+            "input": "angajare(18, 5)",
+            "expected": "\"Angajat\""
+          },
+          {
+            "input": "angajare(25, 3)",
+            "expected": "\"Angajat\""
+          },
+          {
+            "input": "angajare(30, 2)",
+            "expected": "\"Necesita mai multa experienta\""
+          },
+          {
+            "input": "angajare(17, 10)",
+            "expected": "\"Prea tanar\""
+          }
+        ]
+      },
+      {
+        "id": "par-sau-impar",
+        "title": "Par sau Impar",
+        "description": "Citeste un numar `n`.\n- Daca restul impartirii la 2 este 0, afiseaza \"Par\".\n- Altfel, afiseaza \"Impar\".",
+        "starterCode": "def par_sau_impar(n):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "par_sau_impar(4)",
+            "expected": "\"Par\""
+          },
+          {
+            "input": "par_sau_impar(7)",
+            "expected": "\"Impar\""
+          },
+          {
+            "input": "par_sau_impar(0)",
+            "expected": "\"Par\""
+          },
+          {
+            "input": "par_sau_impar(-4)",
+            "expected": "\"Par\""
+          },
+          {
+            "input": "par_sau_impar(-7)",
+            "expected": "\"Impar\""
+          },
+          {
+            "input": "par_sau_impar(101)",
+            "expected": "\"Impar\""
+          }
+        ]
+      },
+      {
+        "id": "pozitiv-negativ-zero",
+        "title": "Pozitiv, Negativ sau Zero",
+        "description": "Citeste un numar intreg `n`.\n- Daca n > 0, afiseaza \"Pozitiv\".\n- Daca n < 0, afiseaza \"Negativ\".\n- Daca n == 0, afiseaza \"Zero\".",
+        "starterCode": "def verifica_numar(n):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "verifica_numar(10)",
+            "expected": "\"Pozitiv\""
+          },
+          {
+            "input": "verifica_numar(-5)",
+            "expected": "\"Negativ\""
+          },
+          {
+            "input": "verifica_numar(0)",
+            "expected": "\"Zero\""
+          },
+          {
+            "input": "verifica_numar(1000000)",
+            "expected": "\"Pozitiv\""
+          },
+          {
+            "input": "verifica_numar(-999999)",
+            "expected": "\"Negativ\""
+          }
+        ]
+      },
+      {
+        "id": "sistem-complex-reduceri",
+        "title": "Sistem Complex de Reduceri",
+        "description": "Se da `suma` si tipul `card` (Standard, Silver, Gold), calculati cat este pretul dupa reducere\n- Gold: suma > 500 (-20%), altfel (-10%)\n- Silver: suma > 500 (-10%), altfel (-5%)\n- Standard: suma > 500 (-5%), altfel (Pret intreg)",
+        "starterCode": "def calculeaza_reducere(suma, card):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "calculeaza_reducere(1000, \"Gold\")",
+            "expected": "800.0"
+          },
+          {
+            "input": "calculeaza_reducere(1000, \"Silver\")",
+            "expected": "900.0"
+          },
+          {
+            "input": "calculeaza_reducere(1000, \"Standard\")",
+            "expected": "950.0"
+          },
+          {
+            "input": "calculeaza_reducere(100, \"Standard\")",
+            "expected": "100"
+          },
+          {
+            "input": "calculeaza_reducere(500, \"Gold\")",
+            "expected": "450.0"
+          },
+          {
+            "input": "calculeaza_reducere(500, \"Silver\")",
+            "expected": "475.0"
+          },
+          {
+            "input": "calculeaza_reducere(500, \"Standard\")",
+            "expected": "500"
+          },
+          {
+            "input": "calculeaza_reducere(10000, \"Standard\")",
+            "expected": "9500.0"
+          }
+        ]
+      },
+      {
+        "id": "tipul-de-triunghi",
+        "title": "Tipul de Triunghi",
+        "description": "Se dau laturile a, b, c.\nPas 1: Verifica daca e triunghi (suma a doua laturi > a treia).\nPas 2: Daca e triunghi, ce tip este?\n- Echilateral (toate egale)\n- Isoscel (doua egale)\n- Oarecare (nicio latura egala)",
+        "starterCode": "def tip_triunghi(a, b, c):\n    # Scrie codul tau aici\n    pass",
+        "testCases": [
+          {
+            "input": "tip_triunghi(10, 10, 10)",
+            "expected": "\"Echilateral\""
+          },
+          {
+            "input": "tip_triunghi(10, 10, 5)",
+            "expected": "\"Isoscel\""
+          },
+          {
+            "input": "tip_triunghi(3, 4, 5)",
+            "expected": "\"Oarecare\""
+          },
+          {
+            "input": "tip_triunghi(1, 2, 10)",
+            "expected": "\"Nu este triunghi\""
+          },
+          {
+            "input": "tip_triunghi(1, 2, 3)",
+            "expected": "\"Nu este triunghi\""
+          },
+          {
+            "input": "tip_triunghi(10, 1, 2)",
+            "expected": "\"Nu este triunghi\""
+          },
+          {
+            "input": "tip_triunghi(1, 10, 2)",
+            "expected": "\"Nu este triunghi\""
+          },
+          {
+            "input": "tip_triunghi(0, 10, 10)",
+            "expected": "\"Nu este triunghi\""
+          },
+          {
+            "input": "tip_triunghi(-5, 10, 10)",
+            "expected": "\"Nu este triunghi\""
+          },
+          {
+            "input": "tip_triunghi(100, 100, 100)",
+            "expected": "\"Echilateral\""
+          },
+          {
+            "input": "tip_triunghi(5, 10, 10)",
+            "expected": "\"Isoscel\""
+          }
+        ]
       }
     ]
   }
