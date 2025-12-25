@@ -161,7 +161,7 @@ run_tests_internal()
                         ) : (
                             <>
                                 <h2 className="text-2xl font-bold text-blue-400">{problem.title}</h2>
-                                <p className="text-gray-300">{problem.description}</p>
+                                <p className="text-gray-300 whitespace-pre-wrap">{problem.description}</p>
                             </>
                         )}
                     </div>
