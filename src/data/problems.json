@@ -10,31 +10,31 @@
         "testCases": [
           {
             "input": "este_bisect(2000)",
-            "expected": "true"
+            "expected": "True"
           },
           {
             "input": "este_bisect(1900)",
-            "expected": "false"
+            "expected": "False"
           },
           {
             "input": "este_bisect(2024)",
-            "expected": "true"
+            "expected": "True"
           },
           {
             "input": "este_bisect(2100)",
-            "expected": "false"
+            "expected": "False"
           },
           {
             "input": "este_bisect(2400)",
-            "expected": "true"
+            "expected": "True"
           },
           {
             "input": "este_bisect(2023)",
-            "expected": "false"
+            "expected": "False"
           },
           {
             "input": "este_bisect(2020)",
-            "expected": "true"
+            "expected": "True"
           }
         ]
       },
