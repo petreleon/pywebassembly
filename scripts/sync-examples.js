@@ -56,7 +56,7 @@ async function main() {
                 item.type === 'file' && item.name.endsWith('.json')
             );
 
-            const problems = [];
+            const problemsWithMetadata = [];
 
             for (const fileItem of problemFiles) {
                 console.log(`  Downloading problem: ${fileItem.name}`);
@@ -68,7 +68,10 @@ async function main() {
 
                     // Basic validation
                     if (problemData.id && problemData.title) {
-                        problems.push(problemData);
+                        problemsWithMetadata.push({
+                            data: problemData,
+                            filename: fileItem.name
+                        });
                     } else {
                         console.warn(`    Skipping ${fileItem.name}: Missing id or title`);
                     }
@@ -77,9 +80,10 @@ async function main() {
                 }
             }
 
-            // Sort problems by filename or inner ID if desired. 
-            // Defaulting to filename order which usually matches 01_..., 02_...
-            problems.sort((a, b) => a.id.localeCompare(b.id));
+            // Sort problems by filename (XX_...)
+            problemsWithMetadata.sort((a, b) => a.filename.localeCompare(b.filename, undefined, { numeric: true, sensitivity: 'base' }));
+
+            const problems = problemsWithMetadata.map(p => p.data);
 
             if (problems.length > 0) {
                 categories.push({
